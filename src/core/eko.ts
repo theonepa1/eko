@@ -1,5 +1,4 @@
 import { WorkflowGenerator } from '../services/workflow/generator';
-import { ClaudeProvider } from '../services/llm/claude-provider';
 import { OpenaiProvider } from '../services/llm/openai-provider';
 import {
   LLMConfig,
@@ -8,7 +7,6 @@ import {
   LLMProvider,
   Tool,
   Workflow,
-  ClaudeConfig,
   OpenaiConfig,
   WorkflowCallback,
   NodeOutput,
@@ -28,22 +26,12 @@ export class Eko {
   private workflowGeneratorMap = new Map<Workflow, WorkflowGenerator>();
 
   constructor(llmConfig: LLMConfig, ekoConfig?: EkoConfig) {
-    if (typeof llmConfig == 'string') {
-      this.llmProvider = new ClaudeProvider(llmConfig);
-    } else if ('llm' in llmConfig) {
-      if (llmConfig.llm == 'claude') {
-        let claudeConfig = llmConfig as ClaudeConfig;
-        this.llmProvider = new ClaudeProvider(
-          claudeConfig.apiKey,
-          claudeConfig.modelName,
-          claudeConfig.options
-        );
-      } else if (llmConfig.llm == 'openai') {
+    if ('llm' in llmConfig) {
+      if (llmConfig.llm == 'openai') {
         let openaiConfig = llmConfig as OpenaiConfig;
         this.llmProvider = new OpenaiProvider(
           openaiConfig.apiKey,
-          openaiConfig.modelName,
-          openaiConfig.options
+          openaiConfig.modelName
         );
       } else {
         let msg: string = 'Unknown parameter: llm > ' + llmConfig['llm'];
